@@ -1,0 +1,6 @@
+{
+  "name": "WeebCentral Search API",
+  "description": "An API and frontend for searching manga on WeebCentral.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
