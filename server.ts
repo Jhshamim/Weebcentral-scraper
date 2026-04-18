@@ -1,5 +1,4 @@
 import express from 'express';
-import { createServer as createViteServer } from 'vite';
 import * as cheerio from 'cheerio';
 import path from 'path';
 import cloudscraper from 'cloudscraper';
@@ -512,11 +511,16 @@ app.get('/api/search', async (req, res) => {
   });
 
   if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
+    // Dynamic import to prevent Vercel's bundler from grabbing Vite & esbuild native binaries
+    (async () => {
+      const viteModule = 'vite';
+      const vite = await import(viteModule);
+      const viteServer = await vite.createServer({
+        server: { middlewareMode: true },
+        appType: 'spa',
+      });
+      app.use(viteServer.middlewares);
+    })();
   } else if (!process.env.VERCEL) {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
