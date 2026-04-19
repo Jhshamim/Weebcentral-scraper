@@ -304,8 +304,16 @@ app.get('/api/search', async (req, res) => {
             
             $cl('a[href*="/chapters/"]').each((_, el) => {
                 const titleText = $cl(el).find('.flex.items-center.gap-2 span').first().text().trim() || $cl(el).text().replace(/\s+/g, ' ').trim();
+                let extractedNum = null;
                 const numMatch = titleText.match(/(?:Chapter|Episode|Ch\.?|Ep\.?)\s*(\d+(?:\.\d+)?)/i);
-                const extractedNum = numMatch ? numMatch[1] : null;
+                if (numMatch) {
+                    extractedNum = numMatch[1];
+                } else {
+                    const fallbackMatch = titleText.match(/(\d+(?:\.\d+)?)/);
+                    if (fallbackMatch) {
+                        extractedNum = fallbackMatch[1];
+                    }
+                }
                 const href = $cl(el).attr('href');
                 let cid = null;
                 if (href) {
@@ -459,9 +467,18 @@ app.get('/api/search', async (req, res) => {
             
             $cl('a[href*="/chapters/"]').each((_, el) => {
                 const titleText = $cl(el).find('.flex.items-center.gap-2 span').first().text().trim() || $cl(el).text().replace(/\s+/g, ' ').trim();
+                let extractedNum = null;
                 const numMatch = titleText.match(/(?:Chapter|Episode|Ch\.?|Ep\.?)\s*(\d+(?:\.\d+)?)/i);
                 if (numMatch) {
-                    const extractedNum = numMatch[1];
+                    extractedNum = numMatch[1];
+                } else {
+                    const fallbackMatch = titleText.match(/(\d+(?:\.\d+)?)/);
+                    if (fallbackMatch) {
+                        extractedNum = fallbackMatch[1];
+                    }
+                }
+                
+                if (extractedNum) {
                     const href = $cl(el).attr('href');
                     if (href) {
                         const m = href.match(/\/chapters\/([^\/]+)/);
